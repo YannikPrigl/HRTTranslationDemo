@@ -49,9 +49,9 @@ function main(params) {
       const languageTranslator = new LanguageTranslatorV3({
         version: '2018-05-01',
         authenticator: new IamAuthenticator({
-          apikey: 'aJaVaEtEQDIPec5oM-fDpHEt2Fcebh7ce6CVFJmgFh3U',
+          apikey: params.apikey,
         }),
-        url: 'https://api.eu-de.language-translator.watson.cloud.ibm.com/instances/f75ee448-b239-4b1b-a81a-1f3daecf0fcc',
+        url: params.url,
       });
 
       languageTranslator.identify({text: params.text})
