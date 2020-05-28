@@ -3,9 +3,9 @@ const { IamAuthenticator } = require('ibm-watson/auth');
 
 
 /**
- * Helper 
- * @param {*} errorMessage 
- * @param {*} defaultLanguage 
+ * Helper
+ * @param {*} errorMessage
+ * @param {*} defaultLanguage
  */
 function getTheErrorResponse(errorMessage, defaultLanguage) {
   return {
@@ -18,14 +18,14 @@ function getTheErrorResponse(errorMessage, defaultLanguage) {
 }
 
 /**
-  *
-  * main() will be run when teh action is invoked
-  *
-  * @param Cloud Functions actions accept a single parameter, which must be a JSON object.
-  *
-  * @return The output of this action, which must be a JSON object.
-  *
-  */
+ *
+ * main() will be run when teh action is invoked
+ *
+ * @param Cloud Functions actions accept a single parameter, which must be a JSON object.
+ *
+ * @return The output of this action, which must be a JSON object.
+ *
+ */
 function main(params) {
 
   /*
@@ -49,16 +49,45 @@ function main(params) {
       // found in the catch clause below
 
       // pick the language with the highest confidence, and send it back
-      resolve({
-        statusCode: 200,
-        body: {
-          translations: "<translated text>",
-          words: 1,
-          characters: 11,
-        },
-        headers: { 'Content-Type': 'application/json' }
+      const languageTranslator = new LanguageTranslatorV3({
+        version: '2018-05-01',
+        authenticator: new IamAuthenticator({
+          apikey: 'aJaVaEtEQDIPec5oM-fDpHEt2Fcebh7ce6CVFJmgFh3U',
+        }),
+        url: 'https://api.eu-de.language-translator.watson.cloud.ibm.com/instances/f75ee448-b239-4b1b-a81a-1f3daecf0fcc"',
       });
-         
+
+      console.error("translate Log:" + params.body.language);
+
+      const translateObj = {
+        text : params.body.text,
+        modelId: params.body.language + '-' + defaultLanguage,
+      };
+
+      if(params.body.language === defaultLanguage){
+        resolve({
+          statusCode: 200,
+          body: {
+            translation: params.body.text,
+            word_count: params.body.text.split(" ").length,
+            character_count: params.body.text.length
+          },
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } else {
+        languageTranslator.translate(translateObj)
+            .then(response => {
+              resolve({
+                statusCode: 200,
+                body: params.result,
+                headers: { 'Content-Type': 'application/json' }
+              });
+              console.log(JSON.stringify(response, null, 2));
+            })
+            .catch(err => {
+              console.log('error:', err);
+            })
+      }
     } catch (err) {
       console.error('Error while initializing the AI service', err);
       resolve(getTheErrorResponse('Error while communicating with the language service', defaultLanguage));

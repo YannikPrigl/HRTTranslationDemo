@@ -3,9 +3,9 @@ const { IamAuthenticator } = require('ibm-watson/auth');
 
 
 /**
- * Helper 
- * @param {*} errorMessage 
- * @param {*} defaultLanguage 
+ * Helper
+ * @param {*} errorMessage
+ * @param {*} defaultLanguage
  */
 function getTheErrorResponse(errorMessage, defaultLanguage) {
   return {
@@ -18,14 +18,14 @@ function getTheErrorResponse(errorMessage, defaultLanguage) {
 }
 
 /**
-  *
-  * main() will be run when the action is invoked
-  *
-  * @param Cloud Functions actions accept a single parameter, which must be a JSON object.
-  *
-  * @return The output of this action, which must be a JSON object.
-  *
-  */
+ *
+ * main() will be run when the action is invoked
+ *
+ * @param Cloud Functions actions accept a single parameter, which must be a JSON object.
+ *
+ * @return The output of this action, which must be a JSON object.
+ *
+ */
 function main(params) {
 
   /*
@@ -36,7 +36,7 @@ function main(params) {
   return new Promise(function (resolve, reject) {
 
     try {
-      
+
       // *******TODO**********
       // - Call the language identification API of the translation service
       // see: https://cloud.ibm.com/apidocs/language-translator?code=node#identify-language
@@ -46,21 +46,31 @@ function main(params) {
 
       // in case of errors during the call resolve with an error message according to the pattern 
       // found in the catch clause below
-
-      resolve({
-        statusCode: 200,
-        body: {
-          text: params.text, 
-          language: "<Best Language>",
-          confidence: 0.5,
-        },
-        headers: { 'Content-Type': 'application/json' }
+      const languageTranslator = new LanguageTranslatorV3({
+        version: '2018-05-01',
+        authenticator: new IamAuthenticator({
+          apikey: 'aJaVaEtEQDIPec5oM-fDpHEt2Fcebh7ce6CVFJmgFh3U',
+        }),
+        url: 'https://api.eu-de.language-translator.watson.cloud.ibm.com/instances/f75ee448-b239-4b1b-a81a-1f3daecf0fcc',
       });
 
+      languageTranslator.identify({text: params.text})
+          .then(response => {
+            resolve({
+              tatusCode: 200,
+              body: {
+                text: params.text,
+                language: response.result.languages[0].language,
+                confidence: response.result.languages[0].confidence,
+              },
+              headers: {'Content-Type': 'application/json'}
+            });
+            console.log(JSON.stringify(response, null, 2));
+          })
 
-    } catch (err) {
-      console.error('Error while initializing the AI service', err);
-      resolve(getTheErrorResponse('Error while communicating with the language service', defaultLanguage));
-    }
-  });
+          } catch (err) {
+        console.error('Error while initializing the AI service', err);
+        resolve(getTheErrorResponse('Error while communicating with the language service', defaultLanguage));
+      }
+    });
 }
