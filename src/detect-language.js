@@ -1,6 +1,6 @@
 const LanguageTranslatorV3 = require('ibm-watson/language-translator/v3');
 const { IamAuthenticator } = require('ibm-watson/auth');
-const param = require('config/ai-params.json');
+
 
 
 /**
@@ -50,9 +50,9 @@ function main(params) {
       const languageTranslator = new LanguageTranslatorV3({
         version: '2018-05-01',
         authenticator: new IamAuthenticator({
-          apikey: param.apikey,
+          apikey: 'aJaVaEtEQDIPec5oM-fDpHEt2Fcebh7ce6CVFJmgFh3U',
         }),
-        url: param.url,
+        url: 'https://gateway-fra.watsonplatform.net/language-translator/api',
       });
 
       languageTranslator.identify({text: params.text})
