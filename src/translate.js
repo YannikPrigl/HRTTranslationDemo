@@ -55,7 +55,7 @@ function main(params) {
         authenticator: new IamAuthenticator({
           apikey: 'aJaVaEtEQDIPec5oM-fDpHEt2Fcebh7ce6CVFJmgFh3U',
         }),
-        url: 'https://gateway-fra.watsonplatform.net/language-translator/api',
+        url: 'https://api.eu-de.language-translator.watson.cloud.ibm.com/instances/f75ee448-b239-4b1b-a81a-1f3daecf0fcc',
       });
 
       console.error("translate Log:" + params.body.language);
@@ -80,7 +80,7 @@ function main(params) {
             .then(response => {
               resolve({
                 statusCode: 200,
-                body: params.result,
+                body: response.result.translations[0],
                 headers: { 'Content-Type': 'application/json' }
               });
               console.log(JSON.stringify(response, null, 2));
@@ -95,3 +95,4 @@ function main(params) {
     }
   });
 }
+
