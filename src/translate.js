@@ -53,9 +53,9 @@ function main(params) {
       const languageTranslator = new LanguageTranslatorV3({
         version: '2018-05-01',
         authenticator: new IamAuthenticator({
-          apikey: params.apikey,
+          apikey: param.apikey,
         }),
-        url: params.url,
+        url: param.url,
       });
 
       console.error("translate Log:" + params.body.language);
